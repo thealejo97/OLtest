@@ -24,13 +24,11 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");
         String password = credentials.get("password");
-        // Imprimir email y password en la consola
-        System.out.println("Email: " + email);
-        System.out.println("Password: " + password);
 
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
+
             if (user.getPassword().equals(password)) {
                 String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
                 return ResponseEntity.ok(Map.of("token", token));

@@ -1,11 +1,9 @@
 package com.OL.OLtest.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -16,19 +14,16 @@ public class User {
 
     private String password;
 
-    private String role; // ADMIN o AUXILIAR
+    private String role;
 
-    // Constructor vacío (requerido por JPA)
     public User() {}
 
-    // Constructor
     public User(String email, String password, String role) {
         this.email = email;
         this.password = password;
         this.role = role;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
