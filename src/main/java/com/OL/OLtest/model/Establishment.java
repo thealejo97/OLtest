@@ -20,6 +20,18 @@ public class Establishment {
     @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
 
+    @Column(nullable = false)
+    private int employeeCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
+
+    public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
+
     public Long getId() {
         return id;
     }
@@ -50,5 +62,21 @@ public class Establishment {
 
     public void setMerchant(Merchant merchant) {
         this.merchant = merchant;
+    }
+
+    public int getEmployeeCount() {
+        return employeeCount;
+    }
+
+    public void setEmployeeCount(int employeeCount) {
+        this.employeeCount = employeeCount;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

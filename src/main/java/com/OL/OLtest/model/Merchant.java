@@ -37,13 +37,14 @@ public class Merchant {
     @Column(nullable = false)
     private String createdBy;
 
-    @JsonSetter("city")
+    // Setters para IDs desde JSON
+    @JsonSetter("cityId")
     public void setCityById(Long cityId) {
         this.city = new City();
         this.city.setId(cityId);
     }
 
-    @JsonSetter("department")
+    @JsonSetter("departmentId")
     public void setDepartmentById(Long departmentId) {
         this.department = new Department();
         this.department.setId(departmentId);
