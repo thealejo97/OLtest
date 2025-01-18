@@ -40,12 +40,21 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Department> updateDepartment(@PathVariable Long id, @RequestBody Department updatedDepartment) {
+    public ResponseEntity<?> updateDepartment(@PathVariable Long id, @RequestBody Department updatedDepartment) {
         return departmentRepository.findById(id).map(department -> {
-            department.setName(updatedDepartment.getName());
-            return ResponseEntity.ok(departmentRepository.save(department));
-        }).orElse(ResponseEntity.notFound().build());
+            try {
+                if (updatedDepartment.getName() != null) {
+                    department.setName(updatedDepartment.getName());
+                }
+    
+                Department savedDepartment = departmentRepository.save(department);
+                return ResponseEntity.ok(savedDepartment);
+            } catch (Exception e) {
+                return ResponseEntity.status(400).body("Error updating department: " + e.getMessage());
+            }
+        }).orElse(ResponseEntity.status(404).body("Department not found"));
     }
+    
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
