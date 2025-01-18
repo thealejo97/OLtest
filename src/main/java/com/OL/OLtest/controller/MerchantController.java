@@ -100,7 +100,24 @@ public class MerchantController {
     }
     
 
-    
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateMerchantStatus(@PathVariable Long id, @RequestParam String status) {
+        if (!status.equalsIgnoreCase("Active") && !status.equalsIgnoreCase("Inactive")) {
+            return ResponseEntity.badRequest().body("Invalid status. Allowed values are 'Active' or 'Inactive'.");
+        }
+
+        Optional<Merchant> merchantOptional = merchantRepository.findById(id);
+        if (merchantOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("Merchant not found");
+        }
+
+        Merchant merchant = merchantOptional.get();
+        merchant.setStatus(status);
+        Merchant updatedMerchant = merchantRepository.save(merchant);
+
+        return ResponseEntity.ok(updatedMerchant);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateMerchant(@PathVariable Long id, @RequestBody Merchant updatedMerchant) {
         try {
