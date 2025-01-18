@@ -20,7 +20,6 @@ public class Establishment {
     @JoinColumn(name = "merchant_id", nullable = false)
     private Merchant merchant;
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
