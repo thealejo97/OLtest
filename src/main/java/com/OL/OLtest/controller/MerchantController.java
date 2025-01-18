@@ -31,7 +31,7 @@ public class MerchantController {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    // Obtener comerciantes con filtros y paginación
+    
     @GetMapping
     public ResponseEntity<Page<Merchant>> getAllMerchants(
             @RequestParam(defaultValue = "0") int page,
@@ -73,11 +73,11 @@ public class MerchantController {
         return ResponseEntity.ok(merchants);
     }
 
-    // Crear un nuevo comerciante
+    
     @PostMapping
     public ResponseEntity<?> createMerchant(@RequestBody Merchant merchant) {
         try {
-            // Validar City y Department
+            
             if (merchant.getCity() == null || merchant.getCity().getId() == null ||
                 !cityRepository.existsById(merchant.getCity().getId())) {
                 return ResponseEntity.badRequest().body("Invalid City ID");
@@ -88,7 +88,7 @@ public class MerchantController {
                 return ResponseEntity.badRequest().body("Invalid Department ID");
             }
 
-            // Guardar el Merchant
+            
             Merchant savedMerchant = merchantRepository.save(merchant);
             return ResponseEntity.ok(savedMerchant);
 
@@ -96,7 +96,7 @@ public class MerchantController {
             return ResponseEntity.status(400).body("Error creating merchant: " + e.getMessage());
         }
     }
-    // Actualizar el estado de un comerciante
+    
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateMerchantStatus(@PathVariable Long id, @RequestParam String status) {
         if (!status.equalsIgnoreCase("Active") && !status.equalsIgnoreCase("Inactive")) {
@@ -115,7 +115,7 @@ public class MerchantController {
         return ResponseEntity.ok(updatedMerchant);
     }
 
-    // Actualizar un comerciante completo
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updateMerchant(@PathVariable Long id, @RequestBody Merchant updatedMerchant) {
         try {
@@ -148,7 +148,7 @@ public class MerchantController {
         }
     }
 
-    // Eliminar un comerciante
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMerchant(@PathVariable Long id) {
         if (merchantRepository.existsById(id)) {

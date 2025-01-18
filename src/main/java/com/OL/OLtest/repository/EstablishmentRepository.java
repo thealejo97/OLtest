@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EstablishmentRepository extends JpaRepository<Establishment, Long> {
     int countByMerchant(Merchant merchant);
-    int countByMerchantAndStatus(Merchant merchant, String status);
+    int countByMerchantAndStatus(Merchant merchant, Establishment.Status status);
 
     @Query("SELECT SUM(e.employeeCount) FROM Establishment e WHERE e.merchant = :merchant")
-    int sumEmployeesByMerchant(@Param("merchant") Merchant merchant);
+    Integer sumEmployeesByMerchant(@Param("merchant") Merchant merchant);
 }

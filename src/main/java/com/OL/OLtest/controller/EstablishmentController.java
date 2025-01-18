@@ -18,7 +18,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
-import static com.OL.OLtest.model.Establishment.Status.ACTIVE; // Importa el enum Status
+import static com.OL.OLtest.model.Establishment.Status.ACTIVE; 
 
 
 @RestController
@@ -106,24 +106,24 @@ public class EstablishmentController {
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportActiveMerchants() {
         try {
-            // Obtener comerciantes activos
+            
             List<Merchant> activeMerchants = merchantRepository.findAll((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("status"), "Active"));
 
             if (activeMerchants.isEmpty()) {
-                return ResponseEntity.status(204).body(null); // No Content
+                return ResponseEntity.status(204).body(null); 
             }
 
-            // Crear el archivo CSV
+            
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             PrintWriter writer = new PrintWriter(new OutputStreamWriter(byteArrayOutputStream, "UTF-8"));
 
-            // Escribir encabezados
+            
             writer.println("Nombre|Departamento|Municipio|Teléfono|Correo Electrónico|Fecha de Registro|Estado|Cantidad de Establecimientos|Total Activos|Cantidad de Empleados");
 
-            // Escribir información de los comerciantes
+            
             for (Merchant merchant : activeMerchants) {
-                // Manejar posibles valores nulos
+                
                 String departmentName = merchant.getDepartment() != null ? merchant.getDepartment().getName() : "N/A";
                 String cityName = merchant.getCity() != null ? merchant.getCity().getName() : "N/A";
                 String phone = merchant.getPhone() != null ? merchant.getPhone() : "N/A";
@@ -131,12 +131,14 @@ public class EstablishmentController {
                 String status = "N/A";
                 String createdBy = merchant.getCreatedBy() != null ? merchant.getCreatedBy() : "N/A";
 
-                // Contar establecimientos y empleados
+                
                 int establishmentCount = establishmentRepository.countByMerchant(merchant);
-                int activeEstablishments = establishmentRepository.countByMerchantAndStatus(merchant, "Active");
-                int totalEmployees = establishmentRepository.sumEmployeesByMerchant(merchant);
+                int activeEstablishments = establishmentRepository.countByMerchantAndStatus(merchant, Establishment.Status.ACTIVE);
+                int totalEmployees = establishmentRepository.sumEmployeesByMerchant(merchant) != null
+                ? establishmentRepository.sumEmployeesByMerchant(merchant)
+                : 0;
 
-                // Escribir una línea en el archivo
+                
                 writer.printf("%s|%s|%s|%s|%s|%s|%s|%d|%d|%d%n",
                         merchant.getBusinessName(),
                         departmentName,
@@ -153,7 +155,7 @@ public class EstablishmentController {
             writer.flush();
             writer.close();
 
-            // Retornar el archivo como respuesta
+            
             byte[] content = byteArrayOutputStream.toByteArray();
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=merchants.csv");
