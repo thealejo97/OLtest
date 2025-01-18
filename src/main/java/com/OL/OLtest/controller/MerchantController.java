@@ -9,9 +9,11 @@ import com.OL.OLtest.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -31,9 +33,41 @@ public class MerchantController {
     @GetMapping
     public ResponseEntity<Page<Merchant>> getAllMerchants(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String municipality,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String registrationDate
     ) {
-        Page<Merchant> merchants = merchantRepository.findAll(PageRequest.of(page, size));
+        Pageable pageable = PageRequest.of(page, size);
+    
+        Specification<Merchant> spec = Specification.where(null);
+    
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("businessName")), "%" + name.toLowerCase() + "%")
+            );
+        }
+    
+        if (municipality != null && !municipality.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("city").get("name"), municipality)
+            );
+        }
+    
+        if (status != null && !status.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("status"), status)
+            );
+        }
+    
+        if (registrationDate != null && !registrationDate.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("createdAt"), LocalDate.parse(registrationDate))
+            );
+        }
+    
+        Page<Merchant> merchants = merchantRepository.findAll(spec, pageable);
         return ResponseEntity.ok(merchants);
     }
 
@@ -65,12 +99,6 @@ public class MerchantController {
         }
     }
     
-    @GetMapping("/{id}")
-    public ResponseEntity<Merchant> getMerchantById(@PathVariable Long id) {
-        return merchantRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
 
     
     @PutMapping("/{id}")
