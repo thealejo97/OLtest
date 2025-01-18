@@ -24,8 +24,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                     .requestMatchers("/api/auth/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                    .requestMatchers("/api/users/**").authenticated()
+                    .requestMatchers("/h2-console/**").permitAll() // Permitir acceso a H2 Console
                     .anyRequest().authenticated()
+                .and()
+                .headers()
+                    .frameOptions().sameOrigin() // Permitir frames solo para la misma origen
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .build();
