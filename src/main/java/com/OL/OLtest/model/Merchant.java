@@ -14,11 +14,13 @@ public class Merchant {
     @Column(name = "business_name", nullable = false)
     private String businessName;
 
-    @Column(name = "department", nullable = false)
-    private String department;
+    @ManyToOne
+    @JoinColumn(name = "department_id", nullable = false)
+    private Department department;
 
-    @Column(name = "city", nullable = false)
-    private String city;
+    @ManyToOne
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
 
     @Column(name = "phone", nullable = false)
     private String phone;
@@ -61,19 +63,19 @@ public class Merchant {
         this.businessName = businessName;
     }
 
-    public String getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 
