@@ -28,6 +28,15 @@
 					"response": []
 				},
 				{
+					"name": "Delete users",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8080/api/users/1"
+					},
+					"response": []
+				},
+				{
 					"name": "login",
 					"request": {
 						"method": "POST",
@@ -91,6 +100,24 @@
 						"body": {
 							"mode": "raw",
 							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/users/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Update users",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"adminCambiado@example.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -332,6 +359,27 @@
 					"response": []
 				},
 				{
+					"name": "Get city by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Cali\",\r\n  \"department_id\": 1,\r\n  \"createdBy\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/cities/1"
+					},
+					"response": []
+				},
+				{
 					"name": "Get city",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -353,22 +401,10 @@
 					"response": []
 				},
 				{
-					"name": "Get city by id",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Delete city",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Cali\",\r\n  \"department_id\": 1,\r\n  \"createdBy\": \"admin\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": "http://localhost:8080/api/cities/1"
 					},
 					"response": []
@@ -397,6 +433,24 @@
 					"response": []
 				},
 				{
+					"name": "Update Department",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Valle del Cauca UPDATED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/departments/1"
+					},
+					"response": []
+				},
+				{
 					"name": "Create Department",
 					"request": {
 						"method": "POST",
@@ -415,19 +469,10 @@
 					"response": []
 				},
 				{
-					"name": "Update Department",
+					"name": "Delete Department",
 					"request": {
-						"method": "PUT",
+						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"Valle del Cauca UPDATED\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": "http://localhost:8080/api/departments/1"
 					},
 					"response": []
