@@ -37,7 +37,7 @@ public class Merchant {
     @Column(nullable = false)
     private String createdBy;
 
-    // Setters para IDs desde JSON
+    
     @JsonSetter("cityId")
     public void setCityById(Long cityId) {
         this.city = new City();

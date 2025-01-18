@@ -4,8 +4,13 @@ import com.OL.OLtest.model.Merchant;
 import com.OL.OLtest.model.City;
 import com.OL.OLtest.model.Department;
 import com.OL.OLtest.repository.MerchantRepository;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.UnitValue;
+import com.OL.OLtest.model.Establishment;
 import com.OL.OLtest.repository.CityRepository;
 import com.OL.OLtest.repository.DepartmentRepository;
+import com.OL.OLtest.repository.EstablishmentRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +21,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
+
+
+
+import com.OL.OLtest.model.Merchant;
+import com.OL.OLtest.repository.MerchantRepository;
+import com.OL.OLtest.repository.EstablishmentRepository;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.UnitValue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 
 @RestController
@@ -31,7 +54,9 @@ public class MerchantController {
     @Autowired
     private DepartmentRepository departmentRepository;
 
-    
+    @Autowired
+    private EstablishmentRepository establishmentRepository;
+
     @GetMapping
     public ResponseEntity<Page<Merchant>> getAllMerchants(
             @RequestParam(defaultValue = "0") int page,
@@ -157,4 +182,80 @@ public class MerchantController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/{id}/generate-pdf")
+    public ResponseEntity<?> generateMerchantPDF(@PathVariable Long id) {
+        try {
+            // Verificar si el comerciante existe
+            Optional<Merchant> merchantOptional = merchantRepository.findById(id);
+            if (merchantOptional.isEmpty()) {
+                return ResponseEntity.status(404).body("Merchant not found");
+            }
+
+            Merchant merchant = merchantOptional.get();
+
+            // Crear el PDF
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            PdfWriter writer = new PdfWriter(byteArrayOutputStream);
+            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
+
+            // Encabezado
+            document.add(new Paragraph("Merchant Information")
+                    .setBold()
+                    .setFontSize(16)
+                    .setMarginBottom(20));
+
+            // Tabla con información detallada
+            Table table = new Table(UnitValue.createPercentArray(new float[]{3, 7}));
+            table.setWidth(UnitValue.createPercentValue(100));
+            table.addHeaderCell(new Paragraph("Field").setBold());
+            table.addHeaderCell(new Paragraph("Value").setBold());
+
+            table.addCell(new Paragraph("Name/Business Name:"));
+            table.addCell(new Paragraph(merchant.getBusinessName()));
+
+            table.addCell(new Paragraph("Department:"));
+            table.addCell(new Paragraph(merchant.getDepartment() != null ? merchant.getDepartment().getName() : "N/A"));
+
+            table.addCell(new Paragraph("Municipality:"));
+            table.addCell(new Paragraph(merchant.getCity() != null ? merchant.getCity().getName() : "N/A"));
+
+            table.addCell(new Paragraph("Phone:"));
+            table.addCell(new Paragraph(merchant.getPhone() != null ? merchant.getPhone() : "N/A"));
+
+            table.addCell(new Paragraph("Email:"));
+            table.addCell(new Paragraph(merchant.getEmail() != null ? merchant.getEmail() : "N/A"));
+
+            // Información adicional
+            int establishmentCount = establishmentRepository.countByMerchant(merchant);
+            int totalEmployees = Optional.ofNullable(establishmentRepository.sumEmployeesByMerchant(merchant)).orElse(0);
+
+            table.addCell(new Paragraph("Number of Establishments:"));
+            table.addCell(new Paragraph(String.valueOf(establishmentCount)));
+
+            table.addCell(new Paragraph("Active Establishments:"));
+
+            table.addCell(new Paragraph("Total Employees:"));
+            table.addCell(new Paragraph(String.valueOf(totalEmployees)));
+
+            document.add(table);
+
+            document.close();
+
+            // Configurar encabezados de respuesta HTTP
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=merchant_" + id + ".pdf");
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(byteArrayOutputStream.toByteArray());
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error generating PDF: " + e.getMessage());
+        }
+    }
+
+
+
 }
