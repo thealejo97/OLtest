@@ -23,7 +23,7 @@ public class EstablishmentController {
     @Autowired
     private MerchantRepository merchantRepository;
 
-    // Obtener todos los establecimientos con paginación
+    
     @GetMapping
     public ResponseEntity<Page<Establishment>> getAllEstablishments(
             @RequestParam(defaultValue = "0") int page,
@@ -34,7 +34,7 @@ public class EstablishmentController {
         return ResponseEntity.ok(establishments);
     }
 
-    // Crear un establecimiento
+    
     @PostMapping
     public ResponseEntity<?> createEstablishment(@RequestBody Establishment establishment) {
         if (establishment.getMerchant() == null || establishment.getMerchant().getId() == null) {
@@ -51,7 +51,7 @@ public class EstablishmentController {
         return ResponseEntity.ok(savedEstablishment);
     }
 
-    // Obtener un establecimiento por ID
+    
     @GetMapping("/{id}")
     public ResponseEntity<?> getEstablishmentById(@PathVariable Long id) {
         Optional<Establishment> establishmentOptional = establishmentRepository.findById(id);
@@ -61,7 +61,7 @@ public class EstablishmentController {
         return ResponseEntity.ok(establishmentOptional.get());
     }
 
-    // Actualizar un establecimiento
+    
     @PutMapping("/{id}")
     public ResponseEntity<?> updateEstablishment(@PathVariable Long id, @RequestBody Establishment updatedEstablishment) {
         Optional<Establishment> establishmentOptional = establishmentRepository.findById(id);
@@ -85,7 +85,7 @@ public class EstablishmentController {
         return ResponseEntity.ok(savedEstablishment);
     }
 
-    // Eliminar un establecimiento
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteEstablishment(@PathVariable Long id) {
         if (!establishmentRepository.existsById(id)) {

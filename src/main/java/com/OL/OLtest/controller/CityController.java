@@ -74,13 +74,34 @@ public class CityController {
 
     
     @PutMapping("/{id}")
-    public ResponseEntity<City> updateCity(@PathVariable Long id, @RequestBody City updatedCity) {
+    public ResponseEntity<?> updateCity(@PathVariable Long id, @RequestBody Map<String, Object> cityData) {
         return cityRepository.findById(id).map(city -> {
-            city.setName(updatedCity.getName());
-            city.setDepartment(updatedCity.getDepartment());
-            return ResponseEntity.ok(cityRepository.save(city));
-        }).orElse(ResponseEntity.notFound().build());
+            try {
+                
+                String name = (String) cityData.get("name");
+                if (name != null) {
+                    city.setName(name);
+                }
+    
+                
+                if (cityData.containsKey("department_id")) {
+                    Long departmentId = Long.valueOf(cityData.get("department_id").toString());
+                    Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
+                    if (departmentOptional.isEmpty()) {
+                        return ResponseEntity.status(404).body("Department not found");
+                    }
+                    city.setDepartment(departmentOptional.get());
+                }
+    
+                
+                City updatedCity = cityRepository.save(city);
+                return ResponseEntity.ok(updatedCity);
+            } catch (Exception e) {
+                return ResponseEntity.status(400).body("Error updating city: " + e.getMessage());
+            }
+        }).orElse(ResponseEntity.status(404).body("City not found"));
     }
+    
 
     
     @DeleteMapping("/{id}")
