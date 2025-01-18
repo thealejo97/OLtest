@@ -1,6 +1,8 @@
 package com.OL.OLtest.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -15,9 +17,28 @@ public class Department {
     private String name;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<City> cities;
 
-    // Getters and Setters
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdOn;
+
+    @Column(name = "created_by", nullable = false, updatable = false)
+    private String createdBy;
+
+    @Column(name = "updated_on")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedOn;
+
+    @Column(name = "updated_by")
+    private String updatedBy;
+
+    
+    public Department() {
+    }
+
+    
     public Long getId() {
         return id;
     }
@@ -40,5 +61,48 @@ public class Department {
 
     public void setCities(List<City> cities) {
         this.cities = cities;
+    }
+
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    
+    @PrePersist
+    protected void onCreate() {
+        this.createdOn = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedOn = new Date();
     }
 }

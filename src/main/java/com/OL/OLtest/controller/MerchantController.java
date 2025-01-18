@@ -3,7 +3,9 @@ package com.OL.OLtest.controller;
 import com.OL.OLtest.model.Merchant;
 import com.OL.OLtest.repository.MerchantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,19 +17,20 @@ public class MerchantController {
     @Autowired
     private MerchantRepository merchantRepository;
 
-    // Obtener todos los comerciantes
     @GetMapping
-    public List<Merchant> getAllMerchants() {
-        return merchantRepository.findAll();
+    public ResponseEntity<Page<Merchant>> getAllMerchants(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<Merchant> merchants = merchantRepository.findAll(PageRequest.of(page, size));
+        return ResponseEntity.ok(merchants);
     }
 
-    // Crear un nuevo comerciante
     @PostMapping
     public Merchant createMerchant(@RequestBody Merchant merchant) {
         return merchantRepository.save(merchant);
     }
 
-    // Obtener un comerciante por ID
     @GetMapping("/{id}")
     public ResponseEntity<Merchant> getMerchantById(@PathVariable Long id) {
         return merchantRepository.findById(id)
@@ -35,7 +38,6 @@ public class MerchantController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Actualizar un comerciante por ID
     @PutMapping("/{id}")
     public ResponseEntity<Merchant> updateMerchant(@PathVariable Long id, @RequestBody Merchant updatedMerchant) {
         return merchantRepository.findById(id).map(merchant -> {
@@ -48,7 +50,6 @@ public class MerchantController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Eliminar un comerciante por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMerchant(@PathVariable Long id) {
         if (merchantRepository.existsById(id)) {

@@ -1,12 +1,17 @@
 package com.OL.OLtest.controller;
 
 import com.OL.OLtest.model.City;
+import com.OL.OLtest.model.Department;
 import com.OL.OLtest.repository.CityRepository;
+import com.OL.OLtest.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/cities")
@@ -15,19 +20,51 @@ public class CityController {
     @Autowired
     private CityRepository cityRepository;
 
-    // Obtener todas las ciudades
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    
     @GetMapping
-    public List<City> getAllCities() {
-        return cityRepository.findAll();
+    public ResponseEntity<Page<City>> getAllCities(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<City> cities = cityRepository.findAll(PageRequest.of(page, size));
+        return ResponseEntity.ok(cities);
     }
 
-    // Crear una nueva ciudad
+    
     @PostMapping
-    public City createCity(@RequestBody City city) {
-        return cityRepository.save(city);
+    public ResponseEntity<?> createCity(@RequestBody Map<String, Object> cityData) {
+        try {
+            
+            String name = (String) cityData.get("name");
+            Long departmentId = Long.valueOf(cityData.get("department_id").toString());
+            String createdBy = (String) cityData.get("createdBy");
+
+            
+            Optional<Department> departmentOptional = departmentRepository.findById(departmentId);
+            if (departmentOptional.isEmpty()) {
+                return ResponseEntity.status(404).body("Department not found");
+            }
+
+            
+            Department department = departmentOptional.get();
+            City city = new City();
+            city.setName(name);
+            city.setDepartment(department);
+            city.setCreatedBy(createdBy);
+
+            
+            City savedCity = cityRepository.save(city);
+            return ResponseEntity.ok(savedCity);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Error creating city: " + e.getMessage());
+        }
     }
 
-    // Obtener una ciudad por ID
+    
     @GetMapping("/{id}")
     public ResponseEntity<City> getCityById(@PathVariable Long id) {
         return cityRepository.findById(id)
@@ -35,7 +72,7 @@ public class CityController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Actualizar una ciudad por ID
+    
     @PutMapping("/{id}")
     public ResponseEntity<City> updateCity(@PathVariable Long id, @RequestBody City updatedCity) {
         return cityRepository.findById(id).map(city -> {
@@ -45,7 +82,7 @@ public class CityController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Eliminar una ciudad por ID
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCity(@PathVariable Long id) {
         if (cityRepository.existsById(id)) {
