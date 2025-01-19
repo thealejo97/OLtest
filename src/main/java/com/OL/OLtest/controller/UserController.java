@@ -1,4 +1,5 @@
 package com.OL.OLtest.controller;
+import java.util.Date;
 
 import com.OL.OLtest.model.User;
 import com.OL.OLtest.repository.UserRepository;
@@ -30,6 +31,8 @@ public class UserController {
     }
     @PostMapping
     public User createUser(@RequestBody User user) {
+        user.setCreatedBy("system"); 
+        user.setCreatedOn(new Date());
         return userRepository.save(user);
     }
 

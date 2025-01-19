@@ -4,6 +4,7 @@ import com.OL.OLtest.model.Establishment;
 import com.OL.OLtest.model.Merchant;
 import com.OL.OLtest.repository.EstablishmentRepository;
 import com.OL.OLtest.repository.MerchantRepository;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,23 +44,42 @@ public class EstablishmentController {
 
     @PostMapping
     public ResponseEntity<?> createEstablishment(@RequestBody Establishment establishment) {
-        if (establishment.getMerchant() == null || establishment.getMerchant().getId() == null) {
-            return ResponseEntity.badRequest().body("Merchant is required and must include a valid ID");
-        }
+        try {
+            if (establishment.getMerchant() == null || establishment.getMerchant().getId() == null) {
+                return ResponseEntity.badRequest().body("Merchant is required and must include a valid ID");
+            }
     
-        if (establishment.getStatus() == null) {
-            return ResponseEntity.badRequest().body("Status is required");
-        }
+            Optional<Merchant> merchantOptional = merchantRepository.findById(establishment.getMerchant().getId());
+            if (merchantOptional.isEmpty()) {
+                return ResponseEntity.status(404).body("Merchant not found");
+            }
     
-        Optional<Merchant> merchantOptional = merchantRepository.findById(establishment.getMerchant().getId());
-        if (merchantOptional.isEmpty()) {
-            return ResponseEntity.status(404).body("Merchant not found");
-        }
+            establishment.setMerchant(merchantOptional.get());
     
-        establishment.setMerchant(merchantOptional.get());
-        Establishment savedEstablishment = establishmentRepository.save(establishment);
-        return ResponseEntity.ok(savedEstablishment);
+            if (establishment.getName() == null || establishment.getName().isEmpty()) {
+                return ResponseEntity.badRequest().body("Name is required");
+            }
+            if (establishment.getAddress() == null || establishment.getAddress().isEmpty()) {
+                return ResponseEntity.badRequest().body("Address is required");
+            }
+            if (establishment.getStatus() == null) {
+                return ResponseEntity.badRequest().body("Status is required");
+            }
+            if (establishment.getEmployeeCount() <= 0) {
+                return ResponseEntity.badRequest().body("Employee count must be greater than 0");
+            }
+    
+            establishment.setCreatedOn(new Date());
+        
+    
+            Establishment savedEstablishment = establishmentRepository.save(establishment);
+            return ResponseEntity.ok(savedEstablishment);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error creating establishment: " + e.getMessage());
+        }
     }
+    
     
     @GetMapping("/{id}")
     public ResponseEntity<?> getEstablishmentById(@PathVariable Long id) {

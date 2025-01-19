@@ -1,6 +1,9 @@
 package com.OL.OLtest.model;
 
 import jakarta.persistence.*;
+
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
@@ -37,6 +40,16 @@ public class Merchant {
     @Column(nullable = false)
     private String createdBy;
 
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdOn;
+
+    @Column(name = "updated_on")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedOn;
+
+    @Column(name = "updated_by")
+    private String updatedBy;
     
     @JsonSetter("cityId")
     public void setCityById(Long cityId) {
@@ -113,4 +126,29 @@ public class Merchant {
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
+    
+    public Date getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
 }

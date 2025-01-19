@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"admin@example.com\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"ADMIN\"\r\n}",
+							"raw": "{\r\n  \"email\": \"admin@example.com\",\r\n  \"password\": \"password123\",\r\n  \"role\": \"ADMIN\",\r\n  \"createdBy\": \"system\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -172,6 +172,27 @@
 					"response": []
 				},
 				{
+					"name": "Export pdf Merchant",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/merchants/1/generate-pdf"
+					},
+					"response": []
+				},
+				{
 					"name": "Get Merchants by id",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -273,27 +294,6 @@
 						"url": "http://localhost:8080/api/merchants/1"
 					},
 					"response": []
-				},
-				{
-					"name": "Export pdf Merchant",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "http://localhost:8080/api/merchants/1/generate-pdf"
-					},
-					"response": []
 				}
 			],
 			"event": [
@@ -336,6 +336,15 @@
 								}
 							}
 						},
+						"url": "http://localhost:8080/api/cities/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete city",
+					"request": {
+						"method": "DELETE",
+						"header": [],
 						"url": "http://localhost:8080/api/cities/1"
 					},
 					"response": []
@@ -397,15 +406,6 @@
 							}
 						},
 						"url": "http://localhost:8080/api/cities"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete city",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": "http://localhost:8080/api/cities/1"
 					},
 					"response": []
 				}
@@ -507,7 +507,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Establishment Name\",\r\n    \"address\": \"123 Main St\",\r\n    \"merchant\": {\r\n        \"id\": 1\r\n    },\r\n    \"employeeCount\": 10,\r\n    \"status\": \"ACTIVE\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Establishment Name\",\r\n    \"address\": \"123 Main St\",\r\n    \"merchant\": {\r\n        \"id\": 1\r\n    },\r\n    \"employeeCount\": 10,\r\n    \"status\": \"ACTIVE\",\r\n    \"createdBy\": \"ADMIN\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -551,7 +551,7 @@
 	"auth": {
 		"type": "bearer",
 		"bearer": {
-			"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNzI0MTM1MCwiZXhwIjoxNzM3MjQ0OTUwfQ.QQa0u4L6N5_JsLL5S7adDyTr6Lej-dtuR2U4rPu8md4"
+			"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNzMyNjY5OSwiZXhwIjoxNzM3MzMwMjk5fQ.6u2uN6TAlmbxKbdKYZ9WcNK3oo7ovGTveAEB94Y8brc"
 		}
 	},
 	"event": [

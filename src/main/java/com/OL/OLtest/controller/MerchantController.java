@@ -1,4 +1,7 @@
 package com.OL.OLtest.controller;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.OL.OLtest.model.Merchant;
 import com.OL.OLtest.model.City;
@@ -58,7 +61,7 @@ public class MerchantController {
     private EstablishmentRepository establishmentRepository;
 
     @GetMapping
-    public ResponseEntity<Page<Merchant>> getAllMerchants(
+    public ResponseEntity<?> getAllMerchants(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(required = false) String name,
@@ -95,10 +98,55 @@ public class MerchantController {
         }
 
         Page<Merchant> merchants = merchantRepository.findAll(spec, pageable);
-        return ResponseEntity.ok(merchants);
+
+        
+        Page<Map<String, Object>> response = merchants.map(merchant -> {
+            Map<String, Object> merchantData = new HashMap<>();
+            merchantData.put("id", merchant.getId());
+            merchantData.put("businessName", merchant.getBusinessName());
+            merchantData.put("email", merchant.getEmail());
+            merchantData.put("phone", merchant.getPhone());
+            merchantData.put("status", merchant.getStatus());
+            merchantData.put("numberOfEstablishments", establishmentRepository.countByMerchant(merchant));
+            return merchantData;
+        });
+
+        return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getMerchantById(@PathVariable Long id) {
+        try {
+            Optional<Merchant> merchantOptional = merchantRepository.findById(id);
     
+            if (merchantOptional.isEmpty()) {
+                return ResponseEntity.status(404).body("Merchant not found");
+            }
+    
+            Merchant merchant = merchantOptional.get();
+    
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", merchant.getId());
+            response.put("businessName", merchant.getBusinessName());
+            response.put("email", merchant.getEmail());
+            response.put("phone", merchant.getPhone());
+            response.put("status", merchant.getStatus());
+            response.put("numberOfEstablishments", establishmentRepository.countByMerchant(merchant));
+
+            response.put("createdBy", merchant.getCreatedBy());
+            response.put("createdOn", merchant.getCreatedOn());
+            response.put("updatedOn", merchant.getUpdatedOn());
+            response.put("updatedBy", merchant.getUpdatedBy());
+    
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving merchant: " + e.getMessage());
+        }
+    }
+    
+
+
     @PostMapping
     public ResponseEntity<?> createMerchant(@RequestBody Merchant merchant) {
         try {
@@ -107,20 +155,28 @@ public class MerchantController {
                 !cityRepository.existsById(merchant.getCity().getId())) {
                 return ResponseEntity.badRequest().body("Invalid City ID");
             }
-
+    
+            
             if (merchant.getDepartment() == null || merchant.getDepartment().getId() == null ||
                 !departmentRepository.existsById(merchant.getDepartment().getId())) {
                 return ResponseEntity.badRequest().body("Invalid Department ID");
             }
-
+    
+            
+            merchant.setCreatedOn(new Date()); 
+            merchant.setCreatedBy("system"); 
+            merchant.setUpdatedOn(new Date());
+            merchant.setUpdatedBy("system"); 
+    
             
             Merchant savedMerchant = merchantRepository.save(merchant);
             return ResponseEntity.ok(savedMerchant);
-
+    
         } catch (Exception e) {
             return ResponseEntity.status(400).body("Error creating merchant: " + e.getMessage());
         }
     }
+    
     
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateMerchantStatus(@PathVariable Long id, @RequestParam String status) {
@@ -152,7 +208,7 @@ public class MerchantController {
                     }
                     merchant.setCity(cityOptional.get());
                 }
-
+    
                 if (updatedMerchant.getDepartment() != null && updatedMerchant.getDepartment().getId() != null) {
                     Optional<Department> departmentOptional = departmentRepository.findById(updatedMerchant.getDepartment().getId());
                     if (departmentOptional.isEmpty()) {
@@ -160,11 +216,15 @@ public class MerchantController {
                     }
                     merchant.setDepartment(departmentOptional.get());
                 }
-
+    
                 merchant.setBusinessName(updatedMerchant.getBusinessName());
                 merchant.setPhone(updatedMerchant.getPhone());
                 merchant.setEmail(updatedMerchant.getEmail());
                 merchant.setStatus(updatedMerchant.getStatus());
+    
+                merchant.setUpdatedOn(new Date());
+                merchant.setUpdatedBy("system");
+    
                 Merchant savedMerchant = merchantRepository.save(merchant);
                 return ResponseEntity.ok(savedMerchant);
             }).orElse(ResponseEntity.notFound().build());
@@ -172,7 +232,7 @@ public class MerchantController {
             return ResponseEntity.status(400).body("Error updating merchant: " + e.getMessage());
         }
     }
-
+    
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMerchant(@PathVariable Long id) {
@@ -186,7 +246,7 @@ public class MerchantController {
     @GetMapping("/{id}/generate-pdf")
     public ResponseEntity<?> generateMerchantPDF(@PathVariable Long id) {
         try {
-            // Verificar si el comerciante existe
+            
             Optional<Merchant> merchantOptional = merchantRepository.findById(id);
             if (merchantOptional.isEmpty()) {
                 return ResponseEntity.status(404).body("Merchant not found");
@@ -194,18 +254,18 @@ public class MerchantController {
 
             Merchant merchant = merchantOptional.get();
 
-            // Crear el PDF
+            
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             PdfWriter writer = new PdfWriter(byteArrayOutputStream);
             Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
 
-            // Encabezado
+            
             document.add(new Paragraph("Merchant Information")
                     .setBold()
                     .setFontSize(16)
                     .setMarginBottom(20));
 
-            // Tabla con información detallada
+            
             Table table = new Table(UnitValue.createPercentArray(new float[]{3, 7}));
             table.setWidth(UnitValue.createPercentValue(100));
             table.addHeaderCell(new Paragraph("Field").setBold());
@@ -226,7 +286,7 @@ public class MerchantController {
             table.addCell(new Paragraph("Email:"));
             table.addCell(new Paragraph(merchant.getEmail() != null ? merchant.getEmail() : "N/A"));
 
-            // Información adicional
+            
             int establishmentCount = establishmentRepository.countByMerchant(merchant);
             int totalEmployees = Optional.ofNullable(establishmentRepository.sumEmployeesByMerchant(merchant)).orElse(0);
 
@@ -242,7 +302,7 @@ public class MerchantController {
 
             document.close();
 
-            // Configurar encabezados de respuesta HTTP
+            
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=merchant_" + id + ".pdf");
             headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");

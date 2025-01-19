@@ -1,5 +1,7 @@
 package com.OL.OLtest.model;
 
+import java.util.Date;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +17,23 @@ public class User {
     private String password;
 
     private String role;
+
+    @Column(name = "created_on", nullable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdOn;
+
+    @Column(name = "created_by", nullable = false, updatable = false)
+    private String createdBy;
+
+    @Column(name = "updated_on")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedOn;
+
+    @Column(name = "updated_by")
+    private String updatedBy;
+    
+
+    
 
     public User() {}
 
@@ -55,5 +74,11 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+    public void setCreatedOn(Date createdOn) {
+        this.createdOn = createdOn;
     }
 }
