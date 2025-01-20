@@ -108,6 +108,10 @@ public class MerchantController {
             merchantData.put("phone", merchant.getPhone());
             merchantData.put("status", merchant.getStatus());
             merchantData.put("numberOfEstablishments", establishmentRepository.countByMerchant(merchant));
+            merchantData.put("createdBy", merchant.getCreatedBy());
+            merchantData.put("createdOn", merchant.getCreatedOn());
+            merchantData.put("updatedOn", merchant.getUpdatedOn());
+            merchantData.put("updatedBy", merchant.getUpdatedBy());
             return merchantData;
         });
 
