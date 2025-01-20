@@ -108,6 +108,8 @@ public class MerchantController {
             merchantData.put("phone", merchant.getPhone());
             merchantData.put("status", merchant.getStatus());
             merchantData.put("numberOfEstablishments", establishmentRepository.countByMerchant(merchant));
+            merchantData.put("department", merchant.getDepartment());
+            merchantData.put("city", merchant.getCity());
             merchantData.put("createdBy", merchant.getCreatedBy());
             merchantData.put("createdOn", merchant.getCreatedOn());
             merchantData.put("updatedOn", merchant.getUpdatedOn());
@@ -137,6 +139,9 @@ public class MerchantController {
             response.put("phone", merchant.getPhone());
             response.put("status", merchant.getStatus());
             response.put("numberOfEstablishments", establishmentRepository.countByMerchant(merchant));
+
+            response.put("department", merchant.getDepartment());
+            response.put("city", merchant.getCity());
 
             response.put("createdBy", merchant.getCreatedBy());
             response.put("createdOn", merchant.getCreatedOn());
