@@ -193,6 +193,15 @@
 					"response": []
 				},
 				{
+					"name": "Export active merchants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/establishments/export"
+					},
+					"response": []
+				},
+				{
 					"name": "Get Merchants by id",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -220,7 +229,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"businessName\": \"Example Business 2\",\r\n    \"cityId\": 1,\r\n    \"departmentId\": 1,\r\n    \"phone\": \"12321456789\",\r\n    \"email\": \"merchant@example.com\",\r\n    \"status\": \"Active\",\r\n    \"createdBy\": \"admin\"\r\n}\r\n",
+							"raw": "{\r\n    \"businessName\": \"Example Business 18\",\r\n    \"cityId\": 1,\r\n    \"departmentId\": 1,\r\n    \"phone\": \"12321456789\",\r\n    \"email\": \"merchant@example.com\",\r\n    \"status\": \"Active\",\r\n    \"createdBy\": \"admin\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -246,7 +255,7 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/merchants/1/status?status=Inactive",
+							"raw": "http://localhost:8080/api/merchants/1/status?status=Active",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -261,19 +270,10 @@
 							"query": [
 								{
 									"key": "status",
-									"value": "Inactive"
+									"value": "Active"
 								}
 							]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "Export active merchants",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": "http://localhost:8080/api/establishments/export"
 					},
 					"response": []
 				},
@@ -551,7 +551,7 @@
 	"auth": {
 		"type": "bearer",
 		"bearer": {
-			"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNzMyNjY5OSwiZXhwIjoxNzM3MzMwMjk5fQ.6u2uN6TAlmbxKbdKYZ9WcNK3oo7ovGTveAEB94Y8brc"
+			"token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTczNzM4MDUyMCwiZXhwIjoxNzM3Mzg0MTIwfQ.DVKeeySvWjn-gyyzu7-jIl3rGFl-u2Toos3zqKqQenE"
 		}
 	},
 	"event": [
